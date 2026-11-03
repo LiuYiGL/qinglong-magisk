@@ -294,6 +294,9 @@ case "$CMD" in
   watchdog)
     watchdog_main
     ;;
+  port)
+    panel_port
+    ;;
   status)
     status_cmd
     ;;

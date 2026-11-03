@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>青龙 Qinglong</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --card: #161b22;
+    --line: #2b3440;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --green: #3fb950;
+    --red: #f85149;
+    --blue: #58a6ff;
+    --shadow: 0 14px 40px rgba(0, 0, 0, .35);
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --line: #d8dee4;
+      --text: #1f2328;
+      --muted: #656d76;
+      --green: #1a7f37;
+      --red: #cf222e;
+      --blue: #0969da;
+      --shadow: 0 10px 30px rgba(140, 149, 159, .20);
+    }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background:
+      radial-gradient(900px 420px at 50% -10%, rgba(88, 166, 255, .16), transparent 70%),
+      var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    display: grid; place-items: center;
+    padding: calc(20px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom));
+  }
+  .wrap { width: 100%; max-width: 420px; text-align: center; }
+  .logo {
+    width: 76px; height: 76px; margin: 0 auto 18px; border-radius: 22px;
+    display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 24px;
+    letter-spacing: .5px; background: linear-gradient(135deg, #2ea043, #1f6feb);
+    box-shadow: var(--shadow);
+  }
+  h1 { font-size: 24px; margin: 0 0 6px; letter-spacing: .3px; }
+  .sub { color: var(--muted); font-size: 13px; margin: 0 0 26px; }
+  .panel {
+    background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    padding: 22px 18px; box-shadow: var(--shadow);
+  }
+  .msg { font-size: 14.5px; margin: 0; min-height: 22px; }
+  .hint { color: var(--muted); font-size: 12.5px; margin: 12px 0 0; line-height: 1.6; }
+  .spinner {
+    width: 26px; height: 26px; margin: 16px auto 0; border-radius: 50%;
+    border: 2px solid var(--line); border-top-color: var(--blue);
+    animation: spin .8s linear infinite;
+  }
+  .spinner.hidden { display: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .actions { display: grid; gap: 10px; margin-top: 18px; }
+  .actions.hidden { display: none; }
+  button {
+    appearance: none; font-family: inherit; font-size: 15px; font-weight: 650;
+    min-height: 50px; border-radius: 13px; border: 1px solid var(--line);
+    background: var(--card); color: var(--text); cursor: pointer;
+    transition: transform .08s ease, opacity .15s ease;
+  }
+  button:active { transform: scale(.985); }
+  button:disabled { opacity: .45; cursor: default; }
+  button.primary {
+    color: #fff; border-color: transparent;
+    background: linear-gradient(135deg, #2ea043, #238636);
+  }
+  button.ghost { color: var(--blue); background: transparent; border-color: var(--line); }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 7px; background: var(--muted); vertical-align: 1px; }
+  .dot.ok { background: var(--green); }
+  .dot.off { background: var(--red); }
+  footer { margin-top: 18px; color: var(--muted); font-size: 11.5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">QL</div>
+  <h1>青龙 Qinglong</h1>
+  <p class="sub">Android 离线模块 · KernelSU WebUI</p>
+
+  <div class="panel">
+    <p id="msg" class="msg"><span id="dot" class="dot"></span>正在连接青龙面板...</p>
+    <div id="spinner" class="spinner"></div>
+    <div id="actions" class="actions hidden">
+      <button id="btnStart" class="primary">启动青龙并打开面板</button>
+      <button id="btnOpen" class="ghost">直接打开面板</button>
+    </div>
+    <p id="hint" class="hint">青龙面板将直接在 WebUI 内打开。</p>
+  </div>
+
+  <footer>作者 Liuyi · <span id="version">2.24.0</span></footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var MOD_DIR = '/data/adb/modules/qinglong';
+  var QL = MOD_DIR + '/bin/ql.sh';
+  var port = '5700';
+  var busy = false;
+
+  function $(id) { return document.getElementById(id); }
+
+  function hasApi() {
+    return !!(window.ksu && typeof window.ksu.exec === 'function');
+  }
+
+  function exec(command) {
+    return new Promise(function (resolve, reject) {
+      if (!hasApi()) {
+        reject(new Error('当前页面不在 KernelSU WebUI 中'));
+        return;
+      }
+      var name = '__ql_boot_' + Date.now() + '_' + Math.floor(Math.random() * 1000000);
+      var settled = false;
+      window[name] = function (errno, stdout, stderr) {
+        if (settled) return;
+        settled = true;
+        try { delete window[name]; } catch (e) { /* ignore */ }
+        if (errno === 0) resolve(stdout || '');
+        else reject(new Error((stderr || stdout || ('exit code ' + errno)).trim()));
+      };
+      try {
+        window.ksu.exec(command, '{}', name);
+      } catch (e) {
+        settled = true;
+        try { delete window[name]; } catch (e2) { /* ignore */ }
+        reject(e);
+      }
+    });
+  }
+
+  function panelUrl() {
+    return 'http://127.0.0.1:' + port + '/';
+  }
+
+  function setMessage(text, state) {
+    var dot = $('dot');
+    dot.className = 'dot' + (state ? ' ' + state : '');
+    $('msg').innerHTML = '';
+    $('msg').appendChild(dot);
+    $('msg').appendChild(document.createTextNode(text));
+  }
+
+  function showSpinner(show) {
+    $('spinner').className = 'spinner' + (show ? '' : ' hidden');
+  }
+
+  function showActions(show) {
+    $('actions').className = 'actions' + (show ? '' : ' hidden');
+  }
+
+  function openPanel() {
+    if (busy) return;
+    busy = true;
+    $('btnStart').disabled = true;
+    $('btnOpen').disabled = true;
+    setMessage('正在打开青龙面板...', 'ok');
+    showSpinner(true);
+    window.location.assign(panelUrl());
+  }
+
+  async function readPort() {
+    try {
+      var out = (await exec('sh ' + QL + ' port')).trim();
+      if (/^[0-9]+$/.test(out)) port = out;
+    } catch (e) { /* keep default */ }
+  }
+
+  async function isRunning() {
+    var out = await exec('sh ' + QL + ' status');
+    return out.indexOf('运行中') !== -1;
+  }
+
+  async function startAndOpen() {
+    if (busy) return;
+    busy = true;
+    $('btnStart').disabled = true;
+    $('btnOpen').disabled = true;
+    showActions(false);
+    showSpinner(true);
+    setMessage('正在启动青龙，请稍候...', '');
+
+    try {
+      await exec('sh ' + QL + ' start');
+      for (var i = 0; i < 45; i++) {
+        if (await isRunning()) {
+          setMessage('青龙已启动，正在打开面板...', 'ok');
+          setTimeout(function () { window.location.assign(panelUrl()); }, 300);
+          return;
+        }
+        await new Promise(function (resolve) { setTimeout(resolve, 1000); });
+      }
+      throw new Error('启动超时');
+    } catch (e) {
+      busy = false;
+      $('btnStart').disabled = false;
+      $('btnOpen').disabled = false;
+      showSpinner(false);
+      setMessage('启动失败: ' + e.message, 'off');
+      showActions(true);
+    }
+  }
+
+  async function boot() {
+    $('btnStart').addEventListener('click', startAndOpen);
+    $('btnOpen').addEventListener('click', openPanel);
+
+    if (!hasApi()) {
+      showSpinner(false);
+      setMessage('请从 KernelSU 管理器的模块页面打开 WebUI', 'off');
+      showActions(true);
+      $('btnStart').disabled = true;
+      $('hint').textContent = '当前不在 KernelSU WebUI 中，可直接打开面板。';
+      return;
+    }
+
+    try {
+      await readPort();
+      try {
+        var v = (await exec("sed -n 's/^version=//p' " + MOD_DIR + '/module.prop')).trim();
+        if (v) $('version').textContent = v;
+      } catch (e) { /* ignore */ }
+
+      if (await isRunning()) {
+        showSpinner(true);
+        setMessage('青龙运行中，正在打开面板...', 'ok');
+        setTimeout(function () { window.location.assign(panelUrl()); }, 350);
+        return;
+      }
+
+      showSpinner(false);
+      setMessage('青龙当前未运行', 'off');
+      showActions(true);
+      $('hint').textContent = '点击上方按钮启动服务后，会直接进入青龙面板。';
+    } catch (e) {
+      showSpinner(false);
+      setMessage('检测失败: ' + e.message, 'off');
+      showActions(true);
+      $('hint').textContent = '可尝试直接打开面板，或检查模块是否已启用。';
+    }
+  }
+
+  boot();
+})();
+</script>
+</body>
+</html>

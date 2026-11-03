@@ -1,6 +1,6 @@
 id=qinglong
 name=青龙 Qinglong
-version=2.24.0-android.3
-versionCode=224003
+version=2.24.0-android.4
+versionCode=224004
 author=Liuyi
 description=青龙定时任务面板（Node 24 + Python 3.11），完整离线安装，chroot 运行。面板 http://127.0.0.1:5700

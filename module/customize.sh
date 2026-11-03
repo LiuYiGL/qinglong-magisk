@@ -49,6 +49,22 @@ chmod 755 "$MODPATH/bin/qlctl.sh" "$MODPATH/bin/ql.sh" \
           "$MODPATH/service.sh" "$MODPATH/action.sh" "$MODPATH/uninstall.sh"
 chmod 755 "$MODPATH/rootfs/ql/shell/"*.sh 2>/dev/null
 
+# KernelSU 支持模块 WebUI 时，移除旧的操作按钮，避免两个入口重复
+if [ -d /data/adb/ksu ] && [ -f "$MODPATH/webroot/index.html" ] && [ -x /data/adb/ksu/bin/ksud ]; then
+  KVER=$(/data/adb/ksu/bin/ksud -V 2>/dev/null | head -n 1)
+  KVER=${KVER#ksud }
+  KVER=${KVER%% *}
+  KMAJ=${KVER%%.*}
+  KREST=${KVER#*.}
+  KMIN=${KREST%%.*}
+  case "$KMAJ" in ''|*[!0-9]*) KMAJ=0 ;; esac
+  case "$KMIN" in ''|*[!0-9]*) KMIN=0 ;; esac
+  if [ "$KMAJ" -gt 0 ] || [ "$KMIN" -ge 6 ]; then
+    rm -f "$MODPATH/action.sh"
+    print_msg "- KernelSU WebUI 已启用，已移除操作按钮"
+  fi
+fi
+
 STATE=/data/adb/qinglong
 mkdir -p "$STATE/data" "$STATE/logs"
 if [ ! -d "$STATE/data/dep_cache" ] && [ -d "$MODPATH/rootfs/ql/data/dep_cache" ]; then

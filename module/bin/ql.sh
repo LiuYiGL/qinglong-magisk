@@ -18,7 +18,7 @@ CHROOT_PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/ql/dat
 CMD=${1:-help}
 
 case "$CMD" in
-  start|stop|restart|status|open)
+  start|stop|restart|status|open|port)
     exec sh "$CTL" "$MODDIR" "$CMD"
     ;;
   log)
@@ -53,6 +53,7 @@ case "$CMD" in
   stop      停止青龙
   restart   重启青龙
   status    查看运行状态
+  port      查看面板端口
   open      启动并在手机上打开面板
   log [-f]  查看入口日志（-f 持续跟踪）
   shell     进入青龙的 chroot 环境
