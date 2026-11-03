@@ -1,0 +1,10 @@
+# 构建产物（体积过大，不进入 Git；成品通过 Releases 发布）
+build/
+dist/
+tools/go/
+tools/crane*
+tools/*.exe
+tools/*.tar.gz
+tools/*.zip
+tools/qlextract-arm64
+*.log

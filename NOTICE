@@ -1,0 +1,9 @@
+Qinglong Magisk/KernelSU Module
+Copyright 2026 Liuyi
+
+This product bundles qinglong (https://github.com/whyour/qinglong),
+licensed under the Apache License, Version 2.0.
+
+The bundled runtime also includes Alpine Linux, Node.js, Python, and their
+dependencies, each distributed under its own license. See the corresponding
+license files inside the runtime image and upstream projects for details.
