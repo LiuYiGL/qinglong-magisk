@@ -8,14 +8,14 @@
 - **与官方镜像同源**：运行环境取自 `whyour/qinglong:2.24.0` arm64 Alpine 镜像，行为与容器版一致。
 - **chroot 隔离运行**：数据独立持久化在 `/data/adb/qinglong/data`，升级模块不丢数据；**卸载模块会删除全部数据**，卸载前请先备份。
 - **开机自启 + watchdog**：服务异常退出会自动拉起。
-- **Magisk / KernelSU 通用**：标准模块脚本；KernelSU 下通过模块 WebUI 直接进入青龙面板，Magisk 下保留操作按钮。
-- **KernelSU WebUI**：在 KernelSU 模块页点击 WebUI 即直接显示青龙面板；服务未运行时显示启动按钮。KSU 安装时自动移除旧的操作按钮，避免重复入口。
+- **Magisk / KernelSU 通用**：标准模块脚本；KernelSU 下通过模块 WebUI 控制台进入青龙面板，Magisk 下保留操作按钮。
+- **KernelSU WebUI**：在 KernelSU 模块页点击 WebUI 打开控制台，可查看状态、启动/停止/重启、查看日志；点击“进入面板”会在当前 WebUI 内直接显示青龙面板。KSU 安装时自动移除旧的操作按钮，避免重复入口。
 - **已实测**：小米 8（arm64 / Android 15 / Magisk 30.2 / 内核 4.9）安装、重启自启、面板健康检查均通过。
 - **命令行工具**：start / stop / restart / status / open / log / shell / ql。
 
 ## 安装
 
-1. 下载本页附件 `qinglong-v2.24.0-android.4-magisk-arm64.zip`。
+1. 下载本页附件 `qinglong-v2.24.0-android.5-magisk-arm64.zip`。
 2. Magisk：模块 → 从本地安装 → 选择 zip；KernelSU：模块 → 安装 → 选择 zip。
 3. 重启手机。
 4. 浏览器打开 `http://127.0.0.1:5700`，按青龙首次使用流程初始化账号。
@@ -66,7 +66,7 @@ adb pull /data/local/tmp/qinglong-data.tar.gz
 ## 校验
 
 ```text
-SHA256  062c05312bc72a04a97a9dfdc68c69f6d3a01c47c279076471b5213561927bc0
+SHA256  fe663dd85dd0fd3523831dd88946a323deca724ee12607c0ebbae37055667efe
 ```
 
 ## 致谢

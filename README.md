@@ -2,7 +2,7 @@
 
 把 [青龙定时任务面板](https://github.com/whyour/qinglong) 完整搬进 Android。所有运行时随模块打包，**安装过程无需联网**；刷入后开机自启，浏览器访问 `http://127.0.0.1:5700` 即可使用。
 
-> 当前版本：`2.24.0-android.4` · 仅支持 **arm64** 设备
+> 当前版本：`2.24.0-android.5` · 仅支持 **arm64** 设备
 
 ## 特性
 
@@ -10,18 +10,18 @@
 - **与官方镜像同源**：运行环境取自 `whyour/qinglong:2.24.0` arm64 Alpine 镜像，行为与容器版一致。
 - **chroot 隔离运行**：数据独立持久化在 `/data/adb/qinglong/data`，升级模块不丢数据。
 - **开机自启 + watchdog**：服务异常退出会自动拉起。
-- **Magisk / KernelSU 通用**：标准模块脚本；KernelSU 下通过模块 WebUI 直接进入青龙面板，Magisk 下保留操作按钮。
-- **KernelSU WebUI**：在 KSU 模块页点击 WebUI 即直接显示青龙面板；服务未运行时显示启动按钮。KSU 安装时会自动移除 `action.sh`，避免重复入口。
+- **Magisk / KernelSU 通用**：标准模块脚本；KernelSU 下通过模块 WebUI 控制台进入青龙面板，Magisk 下保留操作按钮。
+- **KernelSU WebUI**：在 KSU 模块页点击 WebUI 打开控制台，可查看状态、启动/停止/重启、查看日志；点击“进入面板”会在当前 WebUI 内直接显示青龙面板。KSU 安装时会自动移除 `action.sh`，避免重复入口。
 - **命令行工具**：start / stop / restart / status / open / log / shell / ql。
 - **已实测**：小米 8（arm64 / Android 15 / Magisk 30.2 / 内核 4.9）安装、重启自启、面板健康检查均通过。
 
 ## 安装
 
-1. 从 [Releases](https://github.com/LiuYiGL/qinglong-magisk/releases) 下载 `qinglong-v2.24.0-android.4-magisk-arm64.zip`。
+1. 从 [Releases](https://github.com/LiuYiGL/qinglong-magisk/releases) 下载 `qinglong-v2.24.0-android.5-magisk-arm64.zip`。
 2. Magisk：模块 → 从本地安装 → 选择 zip；KernelSU：模块 → 安装 → 选择 zip。
 3. 重启手机。
 4. 浏览器打开 `http://127.0.0.1:5700`，按青龙首次使用流程初始化账号。
-5. KernelSU 用户可在模块页点击 **WebUI** 按钮，直接进入青龙面板（服务未启动时会显示启动按钮）。
+5. KernelSU 用户可在模块页点击 **WebUI** 打开控制台，再点击“进入面板”直接显示青龙面板（服务未启动时请先点“启动服务”）。
 
 > 安装结束时会解析作者短链 `https://dwz.liuyi.publicvm.com/qinglong` 并打开最终目标页面；解析失败则直接打开短链本身。若被 Android 锁屏或后台限制拦截，不影响安装。
 
@@ -92,7 +92,7 @@ module/                  Magisk/KernelSU 模块脚本
   uninstall.sh           停止服务并删除全部数据
   bin/ql.sh              宿主机命令行工具
   bin/qlctl.sh           服务控制与 watchdog
-webroot/                 KernelSU WebUI（直接显示青龙面板）
+webroot/                 KernelSU WebUI 控制台
   index.html
 tools/qlextract/         离线解包器（Go）
 RELEASE_NOTES.md         发布说明
