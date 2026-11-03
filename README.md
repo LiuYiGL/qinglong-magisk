@@ -16,7 +16,7 @@
 
 ## 安装
 
-1. 从 [Releases](https://github.com/LiuYiGL/qinglong-magisk/releases) 下载 `qinglong-v2.24.0-arm64.zip`。
+1. 从 [Releases](https://github.com/LiuYiGL/qinglong-magisk/releases) 下载 `qinglong-v2.24.0-android.2-magisk-arm64.zip`。
 2. Magisk：模块 → 从本地安装 → 选择 zip；KernelSU：模块 → 安装 → 选择 zip。
 3. 重启手机。
 4. 浏览器打开 `http://127.0.0.1:5700`，按青龙首次使用流程初始化账号。
