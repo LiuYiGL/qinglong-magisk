@@ -2,6 +2,10 @@
 
 把青龙定时任务面板完整搬进 Android。所有运行时随模块打包，**安装过程无需联网**；刷入后开机自启，浏览器访问 `http://127.0.0.1:5700` 即可使用。
 
+## 本次更新
+
+- 修复升级模块时旧青龙服务未停止的问题：安装脚本会先停止旧实例、清理残留进程并卸载旧 rootfs 的 bind mount，再替换运行时；`/data/adb/qinglong/data` 不受影响。
+
 ## 特性
 
 - **完整离线安装**：Node.js 24.22、Python 3.11、青龙 2.24.0、SQLite 原生模块与前端资源全部内置，安装时不下载任何依赖。
@@ -15,7 +19,7 @@
 
 ## 安装
 
-1. 下载本页附件 `qinglong-v2.24.0-android.5-magisk-arm64.zip`。
+1. 下载本页附件 `qinglong-v2.24.0-android.6-magisk-arm64.zip`。
 2. Magisk：模块 → 从本地安装 → 选择 zip；KernelSU：模块 → 安装 → 选择 zip。
 3. 重启手机。
 4. 浏览器打开 `http://127.0.0.1:5700`，按青龙首次使用流程初始化账号。
@@ -66,7 +70,7 @@ adb pull /data/local/tmp/qinglong-data.tar.gz
 ## 校验
 
 ```text
-SHA256  fe663dd85dd0fd3523831dd88946a323deca724ee12607c0ebbae37055667efe
+SHA256  b4b8cbd967adce8a9ed35ed31b240871d0224502cd888ca21653997e926df1c5
 ```
 
 ## 致谢

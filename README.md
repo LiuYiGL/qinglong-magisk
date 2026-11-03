@@ -2,7 +2,7 @@
 
 把 [青龙定时任务面板](https://github.com/whyour/qinglong) 完整搬进 Android。所有运行时随模块打包，**安装过程无需联网**；刷入后开机自启，浏览器访问 `http://127.0.0.1:5700` 即可使用。
 
-> 当前版本：`2.24.0-android.5` · 仅支持 **arm64** 设备
+> 当前版本：`2.24.0-android.6` · 仅支持 **arm64** 设备
 
 ## 特性
 
@@ -17,7 +17,7 @@
 
 ## 安装
 
-1. 从 [Releases](https://github.com/LiuYiGL/qinglong-magisk/releases) 下载 `qinglong-v2.24.0-android.5-magisk-arm64.zip`。
+1. 从 [Releases](https://github.com/LiuYiGL/qinglong-magisk/releases) 下载 `qinglong-v2.24.0-android.6-magisk-arm64.zip`。
 2. Magisk：模块 → 从本地安装 → 选择 zip；KernelSU：模块 → 安装 → 选择 zip。
 3. 重启手机。
 4. 浏览器打开 `http://127.0.0.1:5700`，按青龙首次使用流程初始化账号。
