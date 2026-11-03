@@ -14,12 +14,12 @@
 
 ## 安装
 
-1. 下载本页附件 `qinglong-v2.24.0-android.2-magisk-arm64.zip`。
+1. 下载本页附件 `qinglong-v2.24.0-android.3-magisk-arm64.zip`。
 2. Magisk：模块 → 从本地安装 → 选择 zip；KernelSU：模块 → 安装 → 选择 zip。
 3. 重启手机。
 4. 浏览器打开 `http://127.0.0.1:5700`，按青龙首次使用流程初始化账号。
 
-> 仅支持 arm64 设备。安装结束时会尝试打开作者页面 `https://dwz.liuyi.publicvm.com/qinglong`；若被 Android 拦截，不影响安装。
+> 仅支持 arm64 设备。安装结束时会解析作者短链 `https://dwz.liuyi.publicvm.com/qinglong` 并打开最终目标页面；解析失败则直接打开短链本身。若被 Android 拦截，不影响安装。
 
 ## 使用
 
@@ -65,7 +65,7 @@ adb pull /data/local/tmp/qinglong-data.tar.gz
 ## 校验
 
 ```text
-SHA256  7b7545f562626212573a51b8cb30d2b57c6ad641b797671b7fa9eeeb1079cc89
+SHA256  71ee2adb3d36af196e17a16e5ffaa8bd85583efcb55e7d450f62c3c753985922
 ```
 
 ## 致谢

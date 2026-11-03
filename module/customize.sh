@@ -65,9 +65,21 @@ print_msg "- 安装完成，数据目录: /data/adb/qinglong/data"
 print_msg "- 重启手机后自动启动，浏览器访问 http://127.0.0.1:5700"
 print_msg "- 可在 Magisk/KernelSU 模块页点击操作按钮直接打开面板"
 
-# 安装完成后打开作者页面（Android 可能因锁屏/后台限制拦截，失败不影响安装）
+# 安装完成后解析短链，并打开最终目标页面（解析失败则打开短链本身）
+AUTHOR_URL="https://dwz.liuyi.publicvm.com/qinglong"
+OPEN_URL="$AUTHOR_URL"
+if [ -x "$MODPATH/rootfs/usr/bin/curl" ]; then
+  printf 'nameserver 223.5.5.5\nnameserver 119.29.29.29\nnameserver 8.8.8.8\n' > "$MODPATH/rootfs/etc/resolv.conf"
+  CHROOT_BIN=/system/bin/chroot
+  [ -x "$CHROOT_BIN" ] || CHROOT_BIN=chroot
+  TARGET=$("$CHROOT_BIN" "$MODPATH/rootfs" /usr/bin/env -i PATH=/usr/local/bin:/usr/bin:/bin \
+    /usr/bin/curl -sL -m 15 -o /tmp/.author_url -w '%{url_effective}' "$AUTHOR_URL" 2>/dev/null)
+  if printf '%s' "$TARGET" | grep -qE '^https?://[A-Za-z0-9._~:/?#@!$&()*+,;=%-]+$'; then
+    OPEN_URL="$TARGET"
+  fi
+fi
 if [ -x /system/bin/am ]; then
   print_msg "- 正在打开作者页面..."
   /system/bin/am start --user 0 -a android.intent.action.VIEW \
-    -d "https://dwz.liuyi.publicvm.com/qinglong" >/dev/null 2>&1 || true
+    -d "$OPEN_URL" >/dev/null 2>&1 || true
 fi
