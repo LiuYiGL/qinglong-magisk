@@ -54,6 +54,11 @@ mkdir -p "$STATE/data" "$STATE/logs"
 if [ ! -d "$STATE/data/dep_cache" ] && [ -d "$MODPATH/rootfs/ql/data/dep_cache" ]; then
   cp -a "$MODPATH/rootfs/ql/data/dep_cache" "$STATE/data/" 2>/dev/null
 fi
+# 保留依赖缓存模板，数据目录被清空后可自动恢复
+if [ -d "$MODPATH/rootfs/ql/data/dep_cache" ]; then
+  rm -rf "$MODPATH/dep_cache.seed"
+  cp -a "$MODPATH/rootfs/ql/data/dep_cache" "$MODPATH/dep_cache.seed" 2>/dev/null
+fi
 touch "$STATE/enabled"
 
 print_msg "- 安装完成，数据目录: /data/adb/qinglong/data"

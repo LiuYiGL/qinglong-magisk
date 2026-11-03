@@ -88,9 +88,14 @@ prepare() {
   bind_mount /dev/pts "$ROOTFS/dev/pts" 1
   bind_mount "$DATA" "$ROOTFS/ql/data" 1
 
-  if [ ! -d "$DATA/dep_cache" ] && [ -d "$ROOTFS/ql/data/dep_cache" ]; then
-    cp -a "$ROOTFS/ql/data/dep_cache" "$DATA/" 2>/dev/null || \
-      cp -R "$ROOTFS/ql/data/dep_cache" "$DATA/" 2>/dev/null
+  if [ ! -d "$DATA/dep_cache" ]; then
+    if [ -d "$MODDIR/dep_cache.seed" ]; then
+      cp -a "$MODDIR/dep_cache.seed" "$DATA/dep_cache" 2>/dev/null || \
+        cp -R "$MODDIR/dep_cache.seed" "$DATA/dep_cache" 2>/dev/null
+    elif [ -d "$ROOTFS/ql/data/dep_cache" ]; then
+      cp -a "$ROOTFS/ql/data/dep_cache" "$DATA/dep_cache" 2>/dev/null || \
+        cp -R "$ROOTFS/ql/data/dep_cache" "$DATA/dep_cache" 2>/dev/null
+    fi
   fi
 
   if [ -f "$STATE/resolv.conf" ]; then

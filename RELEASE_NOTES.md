@@ -6,7 +6,7 @@
 
 - **完整离线安装**：Node.js 24.22、Python 3.11、青龙 2.24.0、SQLite 原生模块与前端资源全部内置，安装时不下载任何依赖。
 - **与官方镜像同源**：运行环境取自 `whyour/qinglong:2.24.0` arm64 Alpine 镜像，行为与容器版一致。
-- **chroot 隔离运行**：数据独立持久化在 `/data/adb/qinglong/data`，升级或卸载模块不会丢数据。
+- **chroot 隔离运行**：数据独立持久化在 `/data/adb/qinglong/data`，升级模块不丢数据；**卸载模块会删除全部数据**，卸载前请先备份。
 - **开机自启 + watchdog**：服务异常退出会自动拉起。
 - **Magisk / KernelSU 通用**：标准模块脚本；模块操作按钮可启动服务并打开面板。
 - **已实测**：小米 8（arm64 / Android 15 / Magisk 30.2 / 内核 4.9）安装、重启自启、面板健康检查均通过。
@@ -43,6 +43,18 @@ adb forward tcp:5700 tcp:5700
 
 然后打开 `http://127.0.0.1:5700`。
 
+## 备份与卸载
+
+- 升级模块不会删除数据；**卸载模块会停止服务并删除 `/data/adb/qinglong` 下的全部数据**（任务、脚本、配置、数据库、日志、依赖缓存）。
+- 卸载前备份：
+
+```bash
+adb shell su -c 'tar -czf /data/local/tmp/qinglong-data.tar.gz -C /data/adb/qinglong data'
+adb pull /data/local/tmp/qinglong-data.tar.gz
+```
+
+- 恢复时：先重新安装模块并启动一次，停止服务后把备份解压回 `/data/adb/qinglong/data`，再启动。
+
 ## 说明
 
 - 青龙及其定时任务以 root 身份运行；面板默认监听 `0.0.0.0:5700`，请设置强密码并注意局域网暴露。
@@ -53,7 +65,7 @@ adb forward tcp:5700 tcp:5700
 ## 校验
 
 ```text
-SHA256  c3f92f48ac5ce764f05004e2999d8020c4d43bc803c795fabcc9cbd77b245d92
+SHA256  7b7545f562626212573a51b8cb30d2b57c6ad641b797671b7fa9eeeb1079cc89
 ```
 
 ## 致谢
