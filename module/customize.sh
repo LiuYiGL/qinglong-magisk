@@ -26,6 +26,36 @@ esac
 [ -f "$MODPATH/rootfs.tar.gz" ] || abort_install "缺少 rootfs.tar.gz，模块包不完整"
 [ -f "$MODPATH/bin/qlextract" ] || abort_install "缺少解包器，模块包不完整"
 
+# 升级时旧模块可能仍在运行。旧 rootfs 与新 rootfs 是同一路径，必须先停止
+# 进程并卸载其中的 bind mount，否则 rm -rf 会被挂载点挡住，旧进程也会继续
+# 跑着已被替换的文件。
+stop_old_instance() {
+  OLD_MODDIR=/data/adb/modules/qinglong
+  OLD_ROOTFS=$OLD_MODDIR/rootfs
+  [ -d "$OLD_ROOTFS" ] || return 0
+
+  print_msg "- 停止正在运行的青龙服务..."
+  if [ -f "$OLD_MODDIR/bin/qlctl.sh" ]; then
+    sh "$OLD_MODDIR/bin/qlctl.sh" "$OLD_MODDIR" stop >/dev/null 2>&1 || true
+  fi
+
+  # 兜底：qlctl 缺失或未能结束时，按 PID 文件和 chroot 根目录清理残留进程
+  W=$(cat /data/adb/qinglong/watchdog.pid 2>/dev/null || true)
+  case "$W" in
+    ''|*[!0-9]*) ;;
+    *) kill -9 "$W" 2>/dev/null || true ;;
+  esac
+  for p in /proc/[0-9]*; do
+    [ "$(readlink "$p/root" 2>/dev/null)" = "$OLD_ROOTFS" ] || continue
+    kill -9 "${p#/proc/}" 2>/dev/null || true
+  done
+
+  for m in ql/data dev/pts dev sys proc; do
+    umount "$OLD_ROOTFS/$m" 2>/dev/null || umount -l "$OLD_ROOTFS/$m" 2>/dev/null || true
+  done
+}
+stop_old_instance
+
 print_msg "- 解包青龙运行环境（约 430MB），请耐心等待 1-3 分钟..."
 chmod 755 "$MODPATH/bin/qlextract" 2>/dev/null
 rm -rf "$MODPATH/rootfs"
